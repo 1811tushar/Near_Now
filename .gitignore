@@ -1,0 +1,50 @@
+# Local secrets/config
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node
+**/node_modules/
+**/.next/
+**/npm-debug.log*
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+
+# Java/Maven
+backend/target/
+**/*.class
+
+# Flutter (top-level)
+consumer_flutter/.dart_tool/
+consumer_flutter/build/
+consumer_flutter/.packages
+consumer_flutter/.flutter-plugins
+consumer_flutter/.flutter-plugins-dependencies
+
+# Flutter -> Android (keep android/ checked in, ignore only its build output)
+consumer_flutter/android/.gradle/
+consumer_flutter/android/app/build/
+consumer_flutter/android/local.properties
+consumer_flutter/android/**/*.iml
+consumer_flutter/android/.idea/
+
+# Flutter -> iOS/macOS (keep ios/ checked in, ignore only its build output)
+consumer_flutter/ios/Pods/
+consumer_flutter/ios/.symlinks/
+consumer_flutter/ios/Flutter/Flutter.framework
+consumer_flutter/ios/Flutter/Flutter.podspec
+consumer_flutter/macos/Pods/
+
+# Flutter -> Linux/Web ephemeral
+consumer_flutter/linux/flutter/ephemeral/
+consumer_flutter/**/ephemeral/

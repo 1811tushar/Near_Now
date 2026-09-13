@@ -1,0 +1,75 @@
+:root {
+  --color-success: #166534;
+  --color-success-surface: #dcfce7;
+}
+.theme-dark {
+  --color-success: #86efac;
+  --color-success-surface: #173521;
+}
+
+.theme-bg { background: var(--color-bg); color: var(--color-text); }
+.theme-surface { background: var(--color-surface); }
+.theme-border { border-color: var(--color-border); }
+.theme-text { color: var(--color-text); }
+.theme-muted { color: var(--color-text-muted); }
+.theme-primary { color: var(--color-primary); }
+.theme-primary-bg { background: var(--color-primary); color: var(--color-primary-contrast); }
+.theme-accent-surface { background: var(--color-accent-surface); }
+
+
+
+  :root, .theme-light {
+    color-scheme: light;
+    --color-bg: #f7f8f4;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f3f5f1;
+    --color-text: #10231b;
+    --color-text-muted: #53635b;
+    --color-text-subtle: #5f6f67;
+    --color-border: #d8dfda;
+    --color-primary: #166534;
+    --color-primary-contrast: #ffffff;
+    --color-accent: #b7f34a;
+    --color-accent-surface: #dff7ec;
+    --color-danger: #b91c1c;
+    --color-danger-surface: #fef2f2;
+    --color-focus: #166534;
+    --shadow-card: 0 10px 30px rgba(16,35,27,.08);
+  }
+
+  .theme-dark {
+    color-scheme: dark;
+    --color-bg: #0c1511;
+    --color-surface: #14201a;
+    --color-surface-muted: #1a2921;
+    --color-text: #f3f7f4;
+    --color-text-muted: #c0cdc6;
+    --color-text-subtle: #a8b8b0;
+    --color-border: #33463c;
+    --color-primary: #86efac;
+    --color-primary-contrast: #092012;
+    --color-accent: #b7f34a;
+    --color-accent-surface: #24371b;
+    --color-danger: #fca5a5;
+    --color-danger-surface: #3a1717;
+    --color-focus: #b7f34a;
+    --shadow-card: 0 10px 30px rgba(0,0,0,.28);
+  }
+
+:root {
+  --color-success: #166534;
+  --color-success-surface: #dcfce7;
+}
+.theme-dark {
+  --color-success: #86efac;
+  --color-success-surface: #173521;
+}
+
+.theme-bg { background: var(--color-bg); color: var(--color-text); }
+.theme-surface { background: var(--color-surface); }
+.theme-border { border-color: var(--color-border); }
+.theme-text { color: var(--color-text); }
+.theme-muted { color: var(--color-text-muted); }
+.theme-primary { color: var(--color-primary); }
+.theme-primary-bg { background: var(--color-primary); color: var(--color-primary-contrast); }
+.theme-accent-surface { background: var(--color-accent-surface); }

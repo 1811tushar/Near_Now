@@ -1,0 +1,1 @@
+"""NearNow AI service package."""

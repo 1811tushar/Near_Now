@@ -188,6 +188,37 @@ public class AdminController {
         ));
     }
 
+    // Manual activate/deactivate — the only other path that can set
+    // Vendor.active is the AI onboarding-review flow's auto-approve.
+    // A vendor onboarded any other way had no way to ever go active
+    // without this. Deactivate is the natural counterpart (suspending
+    // a vendor without deleting their profile/history).
+    @PatchMapping("/vendors/{id}/activate")
+    public ResponseEntity<ApiResponse<VendorResponseDTO>> activateVendor(@PathVariable Long id) {
+        Vendor vendor = adminService.setVendorActive(id, true);
+        return ResponseEntity.ok(ApiResponse.success(
+                new VendorResponseDTO(
+                        vendor.getId(), vendor.getUser().getId(), vendor.getUser().getEmail(),
+                        vendor.getBusinessName(), vendor.getBusinessAddress(),
+                        vendor.getGstNumber(), vendor.isActive()
+                ),
+                "Vendor activated"
+        ));
+    }
+
+    @PatchMapping("/vendors/{id}/deactivate")
+    public ResponseEntity<ApiResponse<VendorResponseDTO>> deactivateVendor(@PathVariable Long id) {
+        Vendor vendor = adminService.setVendorActive(id, false);
+        return ResponseEntity.ok(ApiResponse.success(
+                new VendorResponseDTO(
+                        vendor.getId(), vendor.getUser().getId(), vendor.getUser().getEmail(),
+                        vendor.getBusinessName(), vendor.getBusinessAddress(),
+                        vendor.getGstNumber(), vendor.isActive()
+                ),
+                "Vendor deactivated"
+        ));
+    }
+
     @PutMapping("/products/{productId}/vendor/{vendorId}")
     public ResponseEntity<ApiResponse<Void>> assignProductToVendor(
             @PathVariable Long productId,

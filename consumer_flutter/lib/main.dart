@@ -97,6 +97,25 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      // Clamp system font-size scaling to a safe, tested range (0.9x–1.2x)
+      // rather than leaving it fully unbounded. Fixed-height product-grid
+      // cards are pixel-budgeted against this range; an uncapped device
+      // accessibility font size (users regularly set 1.5x–2x) would
+      // silently overflow any fixed-height layout no matter what number
+      // is chosen. This is standard practice in production commerce apps
+      // (Swiggy, Zomato, Amazon, etc.) — accessibility scaling is still
+      // respected within a range that keeps dense card grids reliable.
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        final clampedScaler = mediaQuery.textScaler.clamp(
+          minScaleFactor: 0.9,
+          maxScaleFactor: 1.2,
+        );
+        return MediaQuery(
+          data: mediaQuery.copyWith(textScaler: clampedScaler),
+          child: child!,
+        );
+      },
       home: SplashPage(nextScreen: const AuthWrapper()),
     );
   }

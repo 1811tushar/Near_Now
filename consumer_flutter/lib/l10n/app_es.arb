@@ -119,6 +119,8 @@
   "deliveringToFull": "Entregando a: {name}, {address}, {city} - {pincode}",
   "items": "Artículos",
   "reorder": "Volver a pedir",
+  "recentlyOrdered": "Pedido recientemente",
+  "orderInProgress": "Pedido en curso",
   "cameraPermissionDenied": "Se necesita acceso a la cámara para escanear códigos de barras. Actívalo en la configuración de tu dispositivo.",
   "openSettings": "Abrir configuración",
   "cancelOrder": "Cancelar pedido",

@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../models/category_model.dart';
 import '../providers/category_provider.dart';
@@ -8,6 +10,7 @@ import '../../products/widgets/product_card.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../../core/widgets/shimmer_loading_widget.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../l10n/app_localizations.dart';
 
@@ -19,10 +22,7 @@ import '../../../l10n/app_localizations.dart';
 class CategoryProductsPage extends StatefulWidget {
   final CategoryModel category;
 
-  const CategoryProductsPage({
-    super.key,
-    required this.category,
-  });
+  const CategoryProductsPage({super.key, required this.category});
 
   @override
   State<CategoryProductsPage> createState() => _CategoryProductsPageState();
@@ -38,14 +38,10 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final categoryProvider = context.read<CategoryProvider>();
-      // Make sure the rail has data even on a deep link / cold start,
-      // where Home may not have populated it yet.
       if (categoryProvider.categories.isEmpty) {
         categoryProvider.fetchTopLevelCategories();
       }
-      context
-          .read<ProductProvider>()
-          .fetchProductsByCategory(_selectedCategory.id);
+      context.read<ProductProvider>().fetchProductsByCategory(_selectedCategory.id);
     });
   }
 
@@ -65,13 +61,14 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
         : [_selectedCategory];
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(title: Text(_selectedCategory.name)),
       body: Row(
         children: [
           // Left icon rail
           Container(
-            width: 88,
-            color: AppColors.background,
+            width: 84,
+            color: AppColors.card,
             child: ListView.builder(
               itemCount: rail.length,
               itemBuilder: (context, index) {
@@ -81,48 +78,34 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
                 return InkWell(
                   onTap: () => _selectCategory(category),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: AppSpacing.md, horizontal: AppSpacing.xs),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.secondary
-                          : Colors.transparent,
-                      border: Border(
-                        left: BorderSide(
-                          color: isSelected
-                              ? AppColors.primary
-                              : Colors.transparent,
-                          width: 3,
-                        ),
-                      ),
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: 6),
+                    color: isSelected ? AppColors.tint1 : Colors.transparent,
                     child: Column(
                       children: [
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundColor: AppColors.secondary,
-                          backgroundImage: category.imageUrl.isNotEmpty
-                              ? NetworkImage(category.imageUrl)
-                              : null,
-                          child: category.imageUrl.isEmpty
-                              ? const Icon(Icons.category,
-                                  color: AppColors.grey)
-                              : null,
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.meadow : AppColors.paper,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.category_outlined,
+                            color: isSelected ? Colors.white : AppColors.inkSoft,
+                            size: 20,
+                          ),
                         ),
-                        const SizedBox(height: AppSpacing.xs),
+                        const SizedBox(height: 6),
                         Text(
                           category.name,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.grey,
+                            fontSize: 10.5,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                            color: isSelected ? AppColors.meadow : AppColors.inkSoft,
                           ),
                         ),
                       ],
@@ -135,35 +118,41 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
 
           // Right product grid
           Expanded(
-            child: productProvider.isLoading
-                ? const ShimmerProductGrid()
-                : productProvider.error != null
-                    ? EmptyStateWidget(
-                        icon: Icons.error_outline,
-                        title: l10n.somethingWentWrong,
-                        subtitle: productProvider.error,
-                      )
-                    : productProvider.products.isEmpty
-                        ? EmptyStateWidget(
-                            icon: Icons.inventory_2_outlined,
-                            title: l10n.noProductsHereYet,
-                            subtitle: l10n.checkBackSoon,
-                          )
-                        : GridView.builder(
-                            padding: const EdgeInsets.all(AppSpacing.md),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
+            child: Container(
+              color: AppColors.paper,
+              child: productProvider.isLoading
+                  ? const ShimmerProductGrid()
+                  : productProvider.error != null
+                      ? EmptyStateWidget(
+                          icon: Icons.error_outline,
+                          title: l10n.somethingWentWrong,
+                          subtitle: productProvider.error,
+                        )
+                      : productProvider.products.isEmpty
+                          ? EmptyStateWidget(
+                              icon: Icons.inventory_2_outlined,
+                              title: l10n.noProductsHereYet,
+                              subtitle: l10n.checkBackSoon,
+                            )
+                          : MasonryGridView.count(
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              // Each card sizes to its own natural content
+                              // height — no fixed row height to guess or
+                              // get wrong. This is the standard approach
+                              // for grids of cards with variable content
+                              // (discount badge or not, 1-line vs 2-line
+                              // names, different text-scale settings) —
+                              // overflow becomes structurally impossible
+                              // rather than something to calculate around.
                               crossAxisCount: 2,
                               mainAxisSpacing: AppSpacing.md,
                               crossAxisSpacing: AppSpacing.md,
-                              childAspectRatio: 0.58,
+                              itemCount: productProvider.products.length,
+                              itemBuilder: (context, index) {
+                                return ProductCard(product: productProvider.products[index]);
+                              },
                             ),
-                            itemCount: productProvider.products.length,
-                            itemBuilder: (context, index) {
-                              return ProductCard(
-                                  product: productProvider.products[index]);
-                            },
-                          ),
+            ),
           ),
         ],
       ),

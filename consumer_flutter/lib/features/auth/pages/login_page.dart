@@ -7,6 +7,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/constants/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
@@ -60,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(title: Text(_isRegisterMode ? l10n.register : l10n.login)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -67,6 +69,28 @@ class _LoginPageState extends State<LoginPage> {
           key: _formKey,
           child: Column(
             children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: AppColors.meadow,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 32),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                _isRegisterMode ? 'Create your account' : 'Welcome to NearNow',
+                style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: AppColors.ink),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Groceries delivered in minutes',
+                style: const TextStyle(fontSize: 12.5, color: AppColors.inkSoft, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 26),
               if (_isRegisterMode) ...[
                 TextFormField(
                   controller: fullNameController,

@@ -6,6 +6,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/utils/geocoding_util.dart';
+import '../../../core/constants/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class AddAddressPage extends StatefulWidget {
@@ -109,6 +110,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(
         title: Text(widget.existing != null ? l10n.editAddress : l10n.addAddress),
       ),

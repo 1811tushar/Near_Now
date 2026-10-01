@@ -76,6 +76,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(
         title: Text(l10n.editProfile),
       ),

@@ -12,6 +12,8 @@ import '../../../core/widgets/rating_stars.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/product_image_resolver.dart';
 
 import '../../auth/providers/auth_provider.dart';
 import '../../cart/models/cart_item_model.dart';
@@ -136,6 +138,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(
         title: Text(_product?.name ?? l10n.productDetails),
         actions: [
@@ -242,7 +245,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.sm, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.error,
+                          color: AppColors.meadow,
                           borderRadius: BorderRadius.circular(AppRadius.chip),
                         ),
                         child: Text(
@@ -381,32 +384,54 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   Widget _buildImageGallery(ProductModel product) {
+    // product.images always points at the backend's picsum/seed URLs,
+    // which are never actually correct (see ProductImageResolver's
+    // doc comment) — so the resolver's verified photo, when we have
+    // one, is the only trustworthy image source. Falling back to
+    // product.images here would silently reintroduce the mismatched-
+    // photo bug this whole redesign exists to fix.
+    final resolved = ProductImageResolver.resolve(product.name);
+    final images = resolved != null ? [resolved] : <String>[];
+
     return Stack(
       children: [
         SizedBox(
           height: 320,
           width: double.infinity,
-          child: product.images.isNotEmpty
+          child: images.isNotEmpty
               ? PageView.builder(
                   controller: _imageController,
-                  itemCount: product.images.length,
+                  itemCount: images.length,
                   onPageChanged: (i) => setState(() => _imagePage = i),
                   itemBuilder: (context, index) => CachedNetworkImage(
-                    imageUrl: product.images[index],
+                    imageUrl: images[index],
                     fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => const Center(
-                      child: Icon(Icons.image_not_supported, size: 60),
-                    ),
+                    errorWidget: (_, __, ___) => _imageFallback(),
                   ),
                 )
-              : Container(
-                  color: AppColors.background,
-                  child: const Center(
-                    child: Icon(Icons.image, size: 80, color: AppColors.grey),
-                  ),
-                ),
+              : _imageFallback(),
         ),
-        if (product.images.length > 1)
+        Positioned(
+          left: AppSpacing.lg,
+          bottom: AppSpacing.md,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(9),
+              boxShadow: AppTheme.cardDepth,
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.bolt, size: 15, color: AppColors.meadow),
+                SizedBox(width: 4),
+                Text('Delivery in 9 mins', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+              ],
+            ),
+          ),
+        ),
+        if (images.length > 1)
           Positioned(
             bottom: AppSpacing.md,
             left: 0,
@@ -414,16 +439,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                product.images.length,
+                images.length,
                 (i) => AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   width: _imagePage == i ? 18 : 6,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: _imagePage == i
-                        ? AppColors.primary
-                       : AppColors.secondary.withValues(alpha: 0.6),
+                    color: _imagePage == i ? AppColors.meadow : AppColors.line,
                     borderRadius: BorderRadius.circular(AppRadius.chip),
                   ),
                 ),
@@ -434,6 +457,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
+  Widget _imageFallback() {
+    return Container(
+      color: AppColors.tint1,
+      child: const Center(
+        child: Icon(Icons.shopping_basket_outlined, size: 64, color: AppColors.meadowDark),
+      ),
+    );
+  }
+
   Widget _buildStickyAddToCartBar(ProductModel product) {
     final l10n = AppLocalizations.of(context)!;
     return SafeArea(
@@ -441,11 +473,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg, vertical: AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.secondary,
+          color: AppColors.card,
           boxShadow: [
             BoxShadow(
-             color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 8,
+              color: AppColors.ink.withValues(alpha: 0.08),
+              blurRadius: 10,
               offset: const Offset(0, -2),
             ),
           ],

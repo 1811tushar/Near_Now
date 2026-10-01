@@ -413,6 +413,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reorder => 'Volver a pedir';
 
   @override
+  String get recentlyOrdered => 'Pedido recientemente';
+
+  @override
+  String get orderInProgress => 'Pedido en curso';
+
+  @override
   String get cameraPermissionDenied =>
       'Se necesita acceso a la cámara para escanear códigos de barras. Actívalo en la configuración de tu dispositivo.';
 

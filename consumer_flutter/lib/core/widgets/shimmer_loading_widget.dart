@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_radius.dart';
+import '../theme/app_theme.dart';
 
 /// A single shimmering box — the building block for skeleton placeholders.
 class ShimmerBox extends StatefulWidget {
@@ -53,9 +54,9 @@ class _ShimmerBoxState extends State<ShimmerBox>
               begin: Alignment(-1 + _controller.value * 2, 0),
               end: Alignment(0 + _controller.value * 2, 0),
               colors: const [
-                Color(0xFFE0E0E0),
-                Color(0xFFF5F5F5),
-                Color(0xFFE0E0E0),
+                Color(0xFFEDE9DC),
+                Color(0xFFF6F4EB),
+                Color(0xFFEDE9DC),
               ],
             ),
           ),
@@ -86,8 +87,9 @@ class ShimmerProductGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.secondary,
+            color: AppColors.card,
             borderRadius: BorderRadius.circular(AppRadius.card),
+            boxShadow: AppTheme.cardDepth,
           ),
           padding: const EdgeInsets.all(8),
           child: Column(

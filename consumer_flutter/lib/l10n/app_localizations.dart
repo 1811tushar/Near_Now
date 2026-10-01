@@ -817,6 +817,18 @@ abstract class AppLocalizations {
   /// **'Reorder'**
   String get reorder;
 
+  /// No description provided for @recentlyOrdered.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently ordered'**
+  String get recentlyOrdered;
+
+  /// No description provided for @orderInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Order in progress'**
+  String get orderInProgress;
+
   /// No description provided for @cameraPermissionDenied.
   ///
   /// In en, this message translates to:

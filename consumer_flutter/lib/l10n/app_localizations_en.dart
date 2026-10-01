@@ -408,6 +408,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reorder => 'Reorder';
 
   @override
+  String get recentlyOrdered => 'Recently ordered';
+
+  @override
+  String get orderInProgress => 'Order in progress';
+
+  @override
   String get cameraPermissionDenied =>
       'Camera access is needed to scan barcodes. Please enable it in your device settings.';
 

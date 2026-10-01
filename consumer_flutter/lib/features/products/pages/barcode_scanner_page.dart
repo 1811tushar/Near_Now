@@ -19,8 +19,12 @@ class BarcodeScannerPage extends StatefulWidget {
   State<BarcodeScannerPage> createState() => _BarcodeScannerPageState();
 }
 
-class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
+class _BarcodeScannerPageState extends State<BarcodeScannerPage> with SingleTickerProviderStateMixin {
   final MobileScannerController _controller = MobileScannerController();
+  late final AnimationController _scanLineController = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 2),
+  )..repeat(reverse: true);
 
   // True while we're already handling a scanned code — this stops the
   // camera from firing the lookup multiple times for the same barcode.
@@ -49,6 +53,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
   @override
   void dispose() {
     _controller.dispose();
+    _scanLineController.dispose();
     super.dispose();
   }
 
@@ -176,13 +181,32 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
             onDetect: _onDetect,
           ),
 
-          // Simple viewfinder frame so the person knows where to aim.
+          // Viewfinder frame + animated scan line so the person knows
+          // where to aim and sees the scanner is actively working.
           Container(
             width: 260,
             height: 160,
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.primary, width: 3),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.citrus, width: 2.5),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: AnimatedBuilder(
+              animation: _scanLineController,
+              builder: (context, child) {
+                return Align(
+                  alignment: Alignment(0, -1 + (_scanLineController.value * 2)),
+                  child: Container(
+                    height: 2,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.citrus,
+                      borderRadius: BorderRadius.circular(2),
+                      boxShadow: [BoxShadow(color: AppColors.citrus.withValues(alpha: 0.6), blurRadius: 8)],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 

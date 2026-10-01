@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/chat_message.dart';
 import '../services/ai_chat_service.dart';
 import '../widgets/smart_message_renderer.dart';
+import '../../../core/constants/app_colors.dart';
 
 class AiChatPage extends StatefulWidget {
   final String assistant;
@@ -105,14 +106,19 @@ class _AiChatPageState extends State<AiChatPage> {
         alignment: Alignment.centerRight,
         child: Container(
           margin: const EdgeInsets.only(left: 38, bottom: 10),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.circular(16),
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+          decoration: const BoxDecoration(
+            color: AppColors.meadow,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(14),
+              topRight: Radius.circular(14),
+              bottomLeft: Radius.circular(14),
+              bottomRight: Radius.circular(4),
+            ),
           ),
           child: Text(
             m.text,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600),
           ),
         ),
       );
@@ -129,8 +135,10 @@ class _AiChatPageState extends State<AiChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(
         title: const Text('NearNow Assistant'),
+        backgroundColor: AppColors.paper,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
@@ -165,7 +173,7 @@ class _AiChatPageState extends State<AiChatPage> {
                       child: SizedBox(
                         width: 22,
                         height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.meadow),
                       ),
                     ),
                   );
@@ -175,8 +183,12 @@ class _AiChatPageState extends State<AiChatPage> {
             ),
           ),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                boxShadow: [BoxShadow(color: AppColors.ink.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, -2))],
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -184,16 +196,20 @@ class _AiChatPageState extends State<AiChatPage> {
                       controller: _controller,
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _send(),
-                      decoration: const InputDecoration(
-                        hintText: 'Ask NearNow…',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: 'Ask NearNow AI anything...',
+                        filled: true,
+                        fillColor: AppColors.paper,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   IconButton.filled(
+                    style: IconButton.styleFrom(backgroundColor: AppColors.meadow),
                     onPressed: _loading ? null : _send,
-                    icon: const Icon(Icons.send),
+                    icon: const Icon(Icons.arrow_upward, color: Colors.white),
                     tooltip: 'Send message',
                   ),
                 ],

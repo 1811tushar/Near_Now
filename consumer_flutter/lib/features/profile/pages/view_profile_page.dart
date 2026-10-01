@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/loading_widget.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../address/pages/address_list_page.dart';
@@ -51,6 +52,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
     }
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(
         title: Text(l10n.myProfile),
         actions: [
@@ -69,7 +71,12 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
           // Header Card
-          Card(
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: AppTheme.cardDepth,
+            ),
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
@@ -139,7 +146,12 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
           ),
           const SizedBox(height: AppSpacing.xs),
 
-          Card(
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: AppTheme.cardDepth,
+            ),
             child: Column(
               children: [
                 ListTile(

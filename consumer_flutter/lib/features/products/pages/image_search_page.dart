@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 import 'product_list_page.dart';
+import '../../../core/constants/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Lets the person take a photo (or pick one from the gallery) of a product
@@ -148,15 +149,19 @@ class _ImageSearchPageState extends State<ImageSearchPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(title: Text(l10n.imageSearch)),
       body: Center(
         child: _isProcessing
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator(),
+                  const CircularProgressIndicator(color: AppColors.meadow),
                   const SizedBox(height: 16),
-                  Text(l10n.readingTextFromImage),
+                  Text(
+                    l10n.readingTextFromImage,
+                    style: const TextStyle(color: AppColors.inkSoft, fontWeight: FontWeight.w600),
+                  ),
                 ],
               )
             : const SizedBox.shrink(),

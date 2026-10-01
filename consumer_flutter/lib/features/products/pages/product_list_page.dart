@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../../../l10n/app_localizations.dart';
 import '../providers/product_provider.dart';
 import '../models/product_model.dart';
@@ -225,7 +226,7 @@ class _ProductListPageState extends State<ProductListPage> {
                           selectedColor: AppColors.primary,
                           checkmarkColor: AppColors.secondary,
                           backgroundColor: AppColors.secondary,
-                          side: BorderSide(color: Colors.grey.shade300),
+                          side: const BorderSide(color: AppColors.line),
                           labelStyle: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -244,7 +245,7 @@ class _ProductListPageState extends State<ProductListPage> {
                             selectedColor: AppColors.primary,
                             checkmarkColor: AppColors.secondary,
                             backgroundColor: AppColors.secondary,
-                            side: BorderSide(color: Colors.grey.shade300),
+                            side: const BorderSide(color: AppColors.line),
                             labelStyle: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -280,7 +281,7 @@ class _ProductListPageState extends State<ProductListPage> {
                             selectedColor: AppColors.primary,
                             checkmarkColor: AppColors.secondary,
                             backgroundColor: AppColors.secondary,
-                            side: BorderSide(color: Colors.grey.shade300),
+                            side: const BorderSide(color: AppColors.line),
                             labelStyle: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -355,6 +356,7 @@ class _ProductListPageState extends State<ProductListPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(
         title: Text(widget.categoryId != null ? l10n.products : l10n.allProducts),
         actions: [
@@ -412,16 +414,12 @@ class _ProductListPageState extends State<ProductListPage> {
                                 ? productProvider.fetchProductsByCategory(
                                     _selectedCategoryId!, sort: _selectedSort)
                                 : productProvider.fetchProducts(sort: _selectedSort),
-                            child: GridView.builder(
+                            child: MasonryGridView.count(
                             controller: _scrollController,
                             padding: const EdgeInsets.all(AppSpacing.md),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: AppSpacing.md,
-                              crossAxisSpacing: AppSpacing.md,
-                              childAspectRatio: 0.58,
-                            ),
+                            crossAxisCount: 2,
+                            mainAxisSpacing: AppSpacing.md,
+                            crossAxisSpacing: AppSpacing.md,
                             itemCount: filteredProducts.length +
                                 (productProvider.isLoadingMore ? 2 : 0),
                             itemBuilder: (context, index) {

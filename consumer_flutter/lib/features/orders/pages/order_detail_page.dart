@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,6 +9,11 @@ import '../../cart/models/cart_item_model.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../core/pages/app_shell.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/product_image_resolver.dart';
 import '../../../l10n/app_localizations.dart';
 import 'return_refund_page.dart';
 import '../../ai/providers/order_status_push_provider.dart';
@@ -18,6 +24,7 @@ class OrderDetailPage extends StatelessWidget {
   const OrderDetailPage({super.key, required this.orderId});
 
   static const _statusSteps = ['placed', 'packed', 'out_for_delivery', 'delivered'];
+  static const _stepIcons = [Icons.check, Icons.inventory_2_outlined, Icons.local_shipping_outlined, Icons.home_outlined];
 
   String _statusLabel(AppLocalizations l10n, String status) {
     switch (status) {
@@ -44,11 +51,6 @@ class OrderDetailPage extends StatelessWidget {
     final cartProvider = context.read<CartProvider>();
     final l10n = AppLocalizations.of(context)!;
 
-    // One batched write for every item instead of the previous approach
-    // — N sequential `addToCart()` calls, each of which itself opened
-    // its own transaction and triggered a separate cart re-fetch. For a
-    // 10-item order that used to mean 10 round-trips in a row before the
-    // person saw anything happen; now it's one.
     final cartItems = order.items
         .map((item) => CartItemModel(
               id: '',
@@ -88,8 +90,7 @@ class OrderDetailPage extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.yesCancel,
-                style: const TextStyle(color: Colors.red)),
+            child: Text(l10n.yesCancel, style: const TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -97,20 +98,15 @@ class OrderDetailPage extends StatelessWidget {
 
     if (confirmed != true || !context.mounted) return;
 
-    final success =
-        await context.read<OrderProvider>().cancelOrder(orderId);
+    final success = await context.read<OrderProvider>().cancelOrder(orderId);
 
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-            success ? l10n.orderCancelled : l10n.failedToCancelOrder),
-      ),
+      SnackBar(content: Text(success ? l10n.orderCancelled : l10n.failedToCancelOrder)),
     );
   }
 
-  String _displayOrderId(String id) =>
-      id.length <= 8 ? id : id.substring(0, 8);
+  String _displayOrderId(String id) => id.length <= 8 ? id : id.substring(0, 8);
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +114,7 @@ class OrderDetailPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(title: Text(l10n.orderNumber(_displayOrderId(orderId)))),
       body: StreamBuilder<OrderModel?>(
         stream: orderProvider.streamOrder(orderId),
@@ -133,116 +130,186 @@ class OrderDetailPage extends StatelessWidget {
           final order = snapshot.data!;
           final pushedStatus = context.watch<OrderStatusPushProvider>().statusFor(order.id);
           final displayStatus = pushedStatus ?? order.status;
+          final currentStep = _currentStepIndex(displayStatus);
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
               if (displayStatus != 'cancelled')
-                Row(
-                  children: List.generate(_statusSteps.length, (index) {
-                    final isActive = index <= _currentStepIndex(displayStatus);
-                    return Expanded(
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor:
-                                isActive ? Colors.green : Colors.grey.shade300,
-                            child: Icon(
-                              Icons.check,
-                              size: 16,
-                              color: isActive ? Colors.white : Colors.grey,
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                    boxShadow: AppTheme.cardDepth,
+                  ),
+                  child: Column(
+                    children: List.generate(_statusSteps.length, (index) {
+                      final isDone = index <= currentStep;
+                      final isLast = index == _statusSteps.length - 1;
+                      return IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  width: 26,
+                                  height: 26,
+                                  decoration: BoxDecoration(
+                                    color: isDone ? AppColors.meadow : AppColors.line,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Icon(_stepIcons[index], size: 14, color: isDone ? Colors.white : AppColors.inkSoft),
+                                ),
+                                if (!isLast)
+                                  Expanded(
+                                    child: Container(
+                                      width: 2,
+                                      color: index < currentStep ? AppColors.meadow : AppColors.line,
+                                    ),
+                                  ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _statusLabel(l10n, _statusSteps[index]),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 9),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: isLast ? 0 : AppSpacing.lg, top: 3),
+                                child: Text(
+                                  _statusLabel(l10n, _statusSteps[index]),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    color: isDone ? AppColors.ink : AppColors.inkSoft,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
                 )
               else
-                Center(
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  decoration: BoxDecoration(
+                    color: AppColors.tint3,
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                  ),
+                  alignment: Alignment.center,
                   child: Text(
                     l10n.statusCancelled,
-                    style: const TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.w800),
                   ),
                 ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               Text(
                 l10n.placedOn(order.createdAt.toString().split(' ').first),
-                style: const TextStyle(color: Colors.grey),
+                style: const TextStyle(color: AppColors.inkSoft, fontSize: 12, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Text(
                 l10n.deliveringToFull(order.deliveryAddress.fullName, order.deliveryAddress.addressLine, order.deliveryAddress.city, order.deliveryAddress.pincode),
-                style: const TextStyle(color: Colors.grey),
+                style: const TextStyle(color: AppColors.inkSoft, fontSize: 12, fontWeight: FontWeight.w600),
               ),
-              const Divider(height: 32),
-              Text(
-                l10n.items,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              const SizedBox(height: AppSpacing.lg),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(AppRadius.card),
+                  boxShadow: AppTheme.cardDepth,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.items, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5)),
+                    const SizedBox(height: AppSpacing.sm),
+                    ...order.items.map((item) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: ProductImageResolver.resolve(item.name) != null
+                                  ? CachedNetworkImage(
+                                      imageUrl: ProductImageResolver.resolve(item.name)!,
+                                      width: 42,
+                                      height: 42,
+                                      fit: BoxFit.cover,
+                                      errorWidget: (_, __, ___) => Container(
+                                        width: 42,
+                                        height: 42,
+                                        color: AppColors.tint1,
+                                        child: const Icon(Icons.shopping_basket_outlined, size: 18, color: AppColors.meadowDark),
+                                      ),
+                                    )
+                                  : Container(
+                                      width: 42,
+                                      height: 42,
+                                      color: AppColors.tint1,
+                                      child: const Icon(Icons.shopping_basket_outlined, size: 18, color: AppColors.meadowDark),
+                                    ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(item.name, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                                  Text("${item.unit} • Qty: ${item.quantity}",
+                                      style: const TextStyle(fontSize: 10.5, color: AppColors.inkSoft, fontWeight: FontWeight.w600)),
+                                ],
+                              ),
+                            ),
+                            Text("₹${item.price.toStringAsFixed(0)}", style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800)),
+                          ],
+                        ),
+                      );
+                    }),
+                    const Divider(height: AppSpacing.lg, color: AppColors.line),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(l10n.total, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                        Text("₹${order.totalAmount.toStringAsFixed(2)}", style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 12),
-              ...order.items.map((item) {
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: item.image.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: item.image,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) =>
-                              const Icon(Icons.image_not_supported),
-                        )
-                      : const Icon(Icons.image),
-                  title: Text(item.name),
-                  subtitle: Text("${item.unit} • Qty: ${item.quantity}"),
-                  trailing: Text("₹${item.price.toStringAsFixed(0)}"),
-                );
-              }),
-              const Divider(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.total,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  Text(
-                    "₹${order.totalAmount.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () => _reorder(context, order),
-                  icon: const Icon(Icons.replay),
+                  icon: const Icon(Icons.replay, size: 18),
                   label: Text(l10n.reorder),
                 ),
               ),
               if (order.status == 'delivered') ...[
-                const SizedBox(height: 8),
-                SizedBox(width: double.infinity, child: OutlinedButton.icon(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ReturnRefundPage(order: order))), icon: const Icon(Icons.assignment_return_outlined), label: const Text('Return / Refund'))),
-              ],
-              if (order.isCancellable) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ReturnRefundPage(order: order))),
+                    icon: const Icon(Icons.assignment_return_outlined, size: 18),
+                    label: const Text('Return / Refund'),
+                  ),
+                ),
+              ],
+              if (order.isCancellable) ...[
+                const SizedBox(height: AppSpacing.sm),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(foregroundColor: AppColors.error, side: const BorderSide(color: AppColors.error, width: 1.4)),
                     onPressed: () => _confirmCancel(context, order.id),
-                    icon: const Icon(Icons.cancel_outlined),
+                    icon: const Icon(Icons.cancel_outlined, size: 18),
                     label: Text(l10n.cancelOrder),
                   ),
                 ),

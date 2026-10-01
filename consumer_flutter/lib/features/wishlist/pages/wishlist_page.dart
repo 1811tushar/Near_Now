@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../providers/wishlist_provider.dart';
 import '../../products/models/product_model.dart';
 import '../../products/providers/product_provider.dart';
+import '../../products/widgets/product_card.dart';
 import '../../../core/widgets/loading_widget.dart';
 import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/constants/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class WishlistPage extends StatefulWidget {
@@ -77,9 +79,9 @@ class _WishlistPageState extends State<WishlistPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final wishlistProvider = context.watch<WishlistProvider>();
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(title: Text(l10n.myWishlist)),
       body: _loadingProducts
           ? const LoadingWidget()
@@ -98,95 +100,17 @@ class _WishlistPageState extends State<WishlistPage> {
                     )
                   : RefreshIndicator(
                       onRefresh: _loadWishlistProducts,
-                      child: GridView.builder(
-                      padding: const EdgeInsets.all(12),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      child: MasonryGridView.count(
+                        padding: const EdgeInsets.all(16),
                         crossAxisCount: 2,
-                        childAspectRatio: 0.7,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
+                        itemCount: _products.length,
+                        itemBuilder: (context, index) {
+                          return ProductCard(product: _products[index]);
+                        },
                       ),
-                      itemCount: _products.length,
-                      itemBuilder: (context, index) {
-                        final product = _products[index];
-                        return Card(
-                          clipBehavior: Clip.antiAlias,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: product.images.isNotEmpty
-                                          ? CachedNetworkImage(
-                                              imageUrl: product.images.first,
-                                              fit: BoxFit.cover,
-                                              errorWidget: (_, __, ___) =>
-                                                  const Icon(Icons
-                                                      .image_not_supported),
-                                            )
-                                          : const Icon(
-                                              Icons.image_not_supported),
-                                    ),
-                                    Positioned(
-                                      top: 4,
-                                      right: 4,
-                                      child: IconButton(
-                                        icon: const Icon(
-                                          Icons.favorite,
-                                          color: Colors.red,
-                                        ),
-                                        onPressed: () async {
-                                          // Optimistic removal from this
-                                          // page's own list; if the
-                                          // underlying write fails,
-                                          // WishlistProvider now rolls its
-                                          // own state back and this page
-                                          // will simply reflect whatever
-                                          // is true after the next fetch.
-                                          setState(() {
-                                            _products.removeWhere(
-                                              (p) => p.id == product.id,
-                                            );
-                                          });
-                                          await wishlistProvider
-                                              .toggleWishlist(
-                                            widget.uid,
-                                            product.id,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      product.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      "₹${product.effectivePrice.toStringAsFixed(0)}",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    )),
+                    ),
     );
   }
 }

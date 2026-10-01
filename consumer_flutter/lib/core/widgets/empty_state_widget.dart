@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
+import '../theme/app_theme.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final IconData icon;
@@ -30,10 +31,11 @@ class EmptyStateWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: AppColors.card,
                 shape: BoxShape.circle,
+                boxShadow: AppTheme.cardDepth,
               ),
-              child: Icon(icon, size: 48, color: AppColors.grey),
+              child: Icon(icon, size: 48, color: AppColors.meadowDark),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
@@ -49,12 +51,16 @@ class EmptyStateWidget extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(color: AppColors.grey),
+                    ?.copyWith(color: AppColors.inkSoft),
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: AppSpacing.lg),
-              TextButton(onPressed: onAction, child: Text(actionLabel!)),
+              TextButton(
+                onPressed: onAction,
+                style: TextButton.styleFrom(foregroundColor: AppColors.meadow),
+                child: Text(actionLabel!, style: const TextStyle(fontWeight: FontWeight.w800)),
+              ),
             ],
           ],
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/chat_message.dart';
 import '../../products/widgets/product_card.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 
 class SmartMessageRenderer extends StatelessWidget {
   final ChatMessage message;
@@ -30,14 +32,22 @@ class SmartMessageRenderer extends StatelessWidget {
         return Container(
           margin: const EdgeInsets.only(right: 38, bottom: 10),
           padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: Theme.of(context).dividerColor)),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: AppTheme.cardDepth,
+          ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(message.text),
+            Text(message.text, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.ink)),
             const SizedBox(height: 12),
             Row(children: [
               Expanded(child: OutlinedButton(onPressed: () => onConfirmation?.call(false), child: const Text('No'))),
               const SizedBox(width: 8),
-              Expanded(child: FilledButton(onPressed: () => onConfirmation?.call(true), child: Text(message.actionLabel ?? 'Yes'))),
+              Expanded(child: FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: AppColors.meadow),
+                onPressed: () => onConfirmation?.call(true),
+                child: Text(message.actionLabel ?? 'Yes'),
+              )),
             ]),
           ]),
         );
@@ -46,8 +56,17 @@ class SmartMessageRenderer extends StatelessWidget {
 
   Widget _bubble(BuildContext context, String text) => Container(
     margin: const EdgeInsets.only(right: 38, bottom: 10),
-    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-    decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(16)),
-    child: Text(text),
+    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+    decoration: BoxDecoration(
+      color: AppColors.card,
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(14),
+        topRight: Radius.circular(14),
+        bottomLeft: Radius.circular(4),
+        bottomRight: Radius.circular(14),
+      ),
+      boxShadow: AppTheme.cardDepth,
+    ),
+    child: Text(text, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.ink)),
   );
 }

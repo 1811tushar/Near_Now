@@ -12,6 +12,8 @@ import '../../../core/widgets/quantity_stepper.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/product_image_resolver.dart';
 import '../../orders/providers/order_provider.dart';
 import '../../payment/services/payment_service.dart';
 import '../../address/providers/address_provider.dart';
@@ -334,6 +336,7 @@ class _CartPageState extends State<CartPage> {
     final total = cartProvider.grandTotal;
 
     return Scaffold(
+      backgroundColor: AppColors.paper,
       appBar: AppBar(title: Text(l10n.myCart)),
       body: cartProvider.isLoading
           ? const LoadingWidget()
@@ -363,15 +366,14 @@ class _CartPageState extends State<CartPage> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: AppColors.secondary,
+                        color: AppColors.card,
                         borderRadius: BorderRadius.circular(AppRadius.card),
-                        border: Border.all(
-                            color: AppColors.grey.withValues(alpha: 0.2)),
+                        boxShadow: AppTheme.cardDepth,
                       ),
                       child: Row(
                         children: [
                           const Icon(Icons.location_on_outlined,
-                              color: AppColors.primary),
+                              color: AppColors.meadow),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Column(
@@ -419,8 +421,9 @@ class _CartPageState extends State<CartPage> {
                         margin: const EdgeInsets.only(bottom: AppSpacing.md),
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         decoration: BoxDecoration(
-                          color: AppColors.secondary,
+                          color: AppColors.card,
                           borderRadius: BorderRadius.circular(AppRadius.card),
+                          boxShadow: AppTheme.cardDepth,
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,25 +431,27 @@ class _CartPageState extends State<CartPage> {
                             ClipRRect(
                               borderRadius:
                                   BorderRadius.circular(AppRadius.button),
-                              child: item.image.isNotEmpty
+                              child: ProductImageResolver.resolve(item.name) != null
                                   ? CachedNetworkImage(
-                                      imageUrl: item.image,
+                                      imageUrl: ProductImageResolver.resolve(item.name)!,
                                       width: 56,
                                       height: 56,
                                       fit: BoxFit.cover,
                                       errorWidget: (_, __, ___) => Container(
                                         width: 56,
                                         height: 56,
-                                        color: AppColors.background,
+                                        color: AppColors.tint1,
                                         child: const Icon(
-                                            Icons.image_not_supported),
+                                            Icons.shopping_basket_outlined,
+                                            color: AppColors.meadowDark),
                                       ),
                                     )
                                   : Container(
                                       width: 56,
                                       height: 56,
-                                      color: AppColors.background,
-                                      child: const Icon(Icons.image),
+                                      color: AppColors.tint1,
+                                      child: const Icon(Icons.shopping_basket_outlined,
+                                          color: AppColors.meadowDark),
                                     ),
                             ),
                             const SizedBox(width: AppSpacing.md),
@@ -532,8 +537,9 @@ class _CartPageState extends State<CartPage> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: AppColors.secondary,
+                        color: AppColors.card,
                         borderRadius: BorderRadius.circular(AppRadius.card),
+                        boxShadow: AppTheme.cardDepth,
                       ),
                       child: Column(
                         children: [

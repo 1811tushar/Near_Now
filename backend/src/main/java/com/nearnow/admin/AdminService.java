@@ -254,6 +254,23 @@ public class AdminService {
         tryGenerateEmbedding(product);
     }
 
+
+       // Manual admin path to activate/deactivate a vendor, independent of
+    // the AI onboarding-review flow's auto-approve. That flow was, until
+    // now, the ONLY code path anywhere in the backend that ever set
+    // Vendor.active = true — a vendor created any other way (e.g. via
+    // createOrUpdateVendor above, which deliberately starts new vendors
+    // as inactive) had no way to ever become active. This closes that
+    // gap without touching the AI review flow itself.
+    @Transactional
+    public Vendor setVendorActive(Long vendorId, boolean active) {
+        Vendor vendor = vendorRepository.findById(vendorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found: " + vendorId));
+        vendor.setActive(active);
+        return vendorRepository.save(vendor);
+    }
+
+
     public Page<User> getAllUsers(Pageable pageable) { return userRepository.findAllByOrderByIdDesc(pageable); }
 
     public Page<Vendor> getAllVendors(Pageable pageable) { return vendorRepository.findAllByOrderByIdDesc(pageable); }

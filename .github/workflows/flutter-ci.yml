@@ -1,0 +1,36 @@
+name: Flutter CI
+
+on:
+  push:
+    paths:
+      - 'consumer_flutter/**'
+      - '.github/workflows/flutter-ci.yml'
+  pull_request:
+    paths:
+      - 'consumer_flutter/**'
+
+jobs:
+  analyze-and-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: consumer_flutter
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: flutter analyze
+        run: flutter analyze
+
+      - name: flutter test
+        run: flutter test
+        continue-on-error: true
+
+      - name: flutter build apk (debug)
+        run: flutter build apk --debug

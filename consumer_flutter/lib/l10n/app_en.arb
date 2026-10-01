@@ -204,6 +204,8 @@
   },
   "items": "Items",
   "reorder": "Reorder",
+  "recentlyOrdered": "Recently ordered",
+  "orderInProgress": "Order in progress",
   "cameraPermissionDenied": "Camera access is needed to scan barcodes. Please enable it in your device settings.",
   "openSettings": "Open Settings",
   "cancelOrder": "Cancel Order",

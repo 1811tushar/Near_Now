@@ -97,7 +97,7 @@ class _ReturnRefundPageState extends State<ReturnRefundPage> {
             const Text('Reason', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
             const SizedBox(height: AppSpacing.sm),
             DropdownButtonFormField<String>(
-              value: _reason,
+              initialValue: _reason,
               hint: const Text('Select a reason'),
               items: reasons.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
               onChanged: (v) => setState(() => _reason = v),

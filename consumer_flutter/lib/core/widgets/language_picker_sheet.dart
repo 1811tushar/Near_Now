@@ -21,39 +21,36 @@ void showLanguagePicker(BuildContext context) {
     ),
     builder: (sheetContext) {
       return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Text(
-                l10n.selectLanguage,
-                style: Theme.of(context).textTheme.titleMedium,
+        child: RadioGroup<Locale>(
+          groupValue: localeProvider.locale,
+          onChanged: (value) {
+            if (value != null) localeProvider.setLocale(value);
+            Navigator.pop(sheetContext);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Text(
+                  l10n.selectLanguage,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
-            ),
-            RadioListTile<Locale>(
               // Language names are intentionally shown in their own
               // language (not translated) — this is the standard pattern
               // for language pickers everywhere.
-              title: const Text('English'),
-              value: const Locale('en'),
-              groupValue: localeProvider.locale,
-              onChanged: (value) {
-                if (value != null) localeProvider.setLocale(value);
-                Navigator.pop(sheetContext);
-              },
-            ),
-            RadioListTile<Locale>(
-              title: const Text('Español'),
-              value: const Locale('es'),
-              groupValue: localeProvider.locale,
-              onChanged: (value) {
-                if (value != null) localeProvider.setLocale(value);
-                Navigator.pop(sheetContext);
-              },
-            ),
-            const SizedBox(height: AppSpacing.sm),
-          ],
+              const RadioListTile<Locale>(
+                title: Text('English'),
+                value: Locale('en'),
+              ),
+              const RadioListTile<Locale>(
+                title: Text('Español'),
+                value: Locale('es'),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
+          ),
         ),
       );
     },

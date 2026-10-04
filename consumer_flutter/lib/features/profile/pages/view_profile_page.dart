@@ -205,7 +205,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                   title: Text(l10n.pushNotifications),
                   subtitle: Text(l10n.receiveOrderUpdates),
                   value: user?.notificationsEnabled ?? true,
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                   onChanged: (bool value) async {
                     await userProvider.toggleNotifications(value);
                   },

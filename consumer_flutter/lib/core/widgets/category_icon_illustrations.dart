@@ -67,7 +67,7 @@ class CategoryTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.tile),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.ink.withOpacity(0.05),
+                  color: AppColors.ink.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
@@ -133,7 +133,7 @@ class _CategoryPainter extends CustomPainter {
           ..lineTo(w * 0.2, h * 0.32)
           ..close();
         canvas.drawPath(p, fill);
-        fill.color = Colors.white.withOpacity(0.55);
+        fill.color = Colors.white.withValues(alpha: 0.55);
         canvas.drawRect(Rect.fromLTWH(w * 0.2, h * 0.48, w * 0.6, h * 0.16), fill);
         break;
       case CategoryIllustration.snacks:

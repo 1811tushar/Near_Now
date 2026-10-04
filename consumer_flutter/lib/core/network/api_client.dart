@@ -73,7 +73,7 @@ class ApiClient {
     return _handle(res);
   }
 
-  /// Unwraps the backend's universal ApiResponse<T> envelope:
+  /// Unwraps the backend's universal `ApiResponse<T>` envelope:
   /// {success, data, message, timestamp}. Success -> returns `data`
   /// as-is (caller's *_service.dart does the actual model-parsing).
   /// Failure -> throws ApiException with the backend's own message,

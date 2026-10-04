@@ -88,6 +88,7 @@ class _CartPageState extends State<CartPage> {
       );
       if (!mounted) return;
       await context.read<CartProvider>().clearCart(uid);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Mock payment successful. Order placed.')));
       AppShell.of(context)?.switchToTab(2);
     } catch (e) {
@@ -186,6 +187,7 @@ class _CartPageState extends State<CartPage> {
       await prefs.remove('pending_razorpay_address_id');
       if (!mounted) return;
       await context.read<CartProvider>().clearCart(uid);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Payment successful. Order placed.')),
       );
@@ -293,15 +295,17 @@ class _CartPageState extends State<CartPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
       ),
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: methods.map((method) => RadioListTile<String>(
-            value: method,
-            groupValue: _paymentMethod,
-            title: Text(labelFor(method)),
-            subtitle: Text(subtitleFor(method)),
-            onChanged: (value) => Navigator.pop(context, value),
-          )).toList(),
+        child: RadioGroup<String>(
+          groupValue: _paymentMethod,
+          onChanged: (value) => Navigator.pop(context, value),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: methods.map((method) => RadioListTile<String>(
+              value: method,
+              title: Text(labelFor(method)),
+              subtitle: Text(subtitleFor(method)),
+            )).toList(),
+          ),
         ),
       ),
     );

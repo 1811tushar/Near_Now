@@ -12,12 +12,12 @@ class AppTheme {
   /// Product Detail, Cart, Profile).
   static List<BoxShadow> get cardDepth => [
         BoxShadow(
-          color: AppColors.ink.withOpacity(0.04),
+          color: AppColors.ink.withValues(alpha: 0.04),
           blurRadius: 2,
           offset: const Offset(0, 1),
         ),
         BoxShadow(
-          color: AppColors.ink.withOpacity(0.06),
+          color: AppColors.ink.withValues(alpha: 0.06),
           blurRadius: 14,
           offset: const Offset(0, 4),
         ),

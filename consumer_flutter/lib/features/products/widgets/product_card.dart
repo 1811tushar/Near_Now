@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -85,7 +84,7 @@ class ProductCard extends StatelessWidget {
       color: AppColors.tint1,
       alignment: Alignment.center,
       child: Icon(Icons.shopping_basket_outlined,
-          size: 30, color: AppColors.meadowDark.withOpacity(0.7)),
+          size: 30, color: AppColors.meadowDark.withValues(alpha: 0.7)),
     );
   }
 
@@ -114,9 +113,8 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 110,
-              width: double.infinity,
+            AspectRatio(
+              aspectRatio: 1.1,
               child: Stack(
                 children: [
                   Positioned.fill(child: _image(context)),
@@ -161,7 +159,7 @@ class ProductCard extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.85),
+                              color: Colors.white.withValues(alpha: 0.85),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -227,17 +225,27 @@ class ProductCard extends StatelessWidget {
                     children: [
                       RatingStars(rating: product.rating, size: 11),
                       const SizedBox(width: 3),
-                      Text(_formatReviewCount(product.reviewCount),
-                          style: const TextStyle(fontSize: 9.5, color: AppColors.inkSoft)),
+                      Flexible(
+                        child: Text(
+                          _formatReviewCount(product.reviewCount),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 9.5, color: AppColors.inkSoft),
+                        ),
+                      ),
                       const Spacer(),
                       const Icon(Icons.bolt, size: 11, color: AppColors.meadow),
                       const SizedBox(width: 1),
-                      Text(
-                        DeliveryEstimate.estimateFor(
-                          latitude: selectedAddress?.latitude,
-                          longitude: selectedAddress?.longitude,
+                      Flexible(
+                        child: Text(
+                          DeliveryEstimate.estimateFor(
+                            latitude: selectedAddress?.latitude,
+                            longitude: selectedAddress?.longitude,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 9.5, color: AppColors.inkSoft, fontWeight: FontWeight.w600),
                         ),
-                        style: const TextStyle(fontSize: 9.5, color: AppColors.inkSoft, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
